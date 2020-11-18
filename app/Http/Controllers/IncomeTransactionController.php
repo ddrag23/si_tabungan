@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use DataTables;
 use App\Models\IncomeTransaction;
+use App\Models\Tabungan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,8 +22,8 @@ class IncomeTransactionController extends Controller
 
   public function getTotalJson(IncomeTransaction $income)
   {
-    return response()->json(['total' => $income->sum('nominal')]); 
-  } 
+    return response()->json(['total' => $income->sum('nominal')]);
+  }
 
   public function getJsonData()
   {
@@ -55,6 +56,20 @@ class IncomeTransactionController extends Controller
         'nominal' => $request->nominal,
         'created_by' => Auth::user()->id
       ]);
+      $tabungan = Tabungan::where('user_id', $request->user_id)->first();
+      if (!empty($tabungan)) {
+        Tabungan::where('user_id', $request->user_id)->update([
+          'user_id' => $request->user_id,
+          'saldo' => $tabungan->saldo + $request->nominal,
+          'modified_by' => Auth::user()->id
+        ]);
+      } else {
+        Tabungan::create([
+          'user_id' => $request->user_id,
+          'saldo' => $request->nominal,
+          'created_by' => Auth::user()->id
+        ]);
+      }
       return response()->json(['success' => true, 'message' => 'Data berhasil disimpan']);
     }
   }
@@ -63,5 +78,10 @@ class IncomeTransactionController extends Controller
   {
     $income->delete();
     return response()->json(['message' => 'Data berhasil dihapus']);
+  }
+
+  public function getTabungan($id)
+  {
+    return Tabungan::where('user_id', $id)->first();
   }
 }

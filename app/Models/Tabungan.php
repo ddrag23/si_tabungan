@@ -10,9 +10,8 @@ class Tabungan extends Model
     use HasFactory;
     protected $table = 'tabungan';
     protected $fillable = [
-      'users_id',
-      'nominal',
-      'status_pembayaran',
+      'user_id',
+      'saldo',
       'created_by',
       'modified_by'
     ];

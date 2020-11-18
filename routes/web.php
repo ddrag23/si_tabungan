@@ -27,6 +27,6 @@ Route::group(['middleware' => 'auth'], function(){
   Route::get('/transaksi/transaksi-masuk',[IncomeTransactionController::class,'index'])->name('income.index');
   Route::get('/transaksi/transaksi-masuk/json-data',[IncomeTransactionController::class,'getJsonData']);
   Route::get('/transaksi/transaksi-masuk/json-total',[IncomeTransactionController::class,'getTotalJson']);
-  Route::post('/transaksi/transaksi-masuk/store',[IncomeTransactionController::class,'store']);
+  Route::match(['GET','POST'],'/transaksi/transaksi-masuk/store',[IncomeTransactionController::class,'store']);
   Route::delete('/transaksi/transaksi-masuk/delete/{income}',[IncomeTransactionController::class,'destroy']);
 });
