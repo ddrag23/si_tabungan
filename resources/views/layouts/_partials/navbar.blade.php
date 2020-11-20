@@ -52,8 +52,7 @@
                 />
                 <div class="d-sm-none d-lg-inline-block">
                   {{ Auth::user()->name }}
-                </div></a
-              >
+                </div></a>
               <div class="dropdown-menu dropdown-menu-right">
                 <div class="dropdown-title">Logged in 5 min ago</div>
                 <a href="features-profile.html" class="dropdown-item has-icon">
@@ -89,24 +88,28 @@
               </li>
               <li class="menu-header">Menu</li>
 
-              <li class="dropdown">
+              <li class="dropdown {{ Request::is('transaksi*') ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown"
                   ><i class="fas fa-dollar-sign"></i> <span>Master Transaksi</span></a
                 >
                 <ul class="dropdown-menu">
-                  <li>
+                  <li class="{{ Request::is('transaksi/transaksi-masuk') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('income.index') }}">Transaksi Masuk</a>
                   </li>
-                  <li>
-                    <a class="nav-link" href="bootstrap-alert.html">Transaksi Keluar</a>
+                  <li class="{{ Request::is('transaksi/transaksi-keluar') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('outgoing.index') }}">Transaksi Keluar</a>
                   </li>
                 </ul>
               </li>
 
-
               <li class="{{ Request::is('tabungan*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('tabungan.index') }}"
                   ><i class="fas fa-save"></i> <span>Master Tabungan</span></a
+                >
+              </li>
+              <li class="{{ Request::is('pinjaman*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('pinjaman.index') }}"
+                  ><i class="fas fa-save"></i> <span>Master Pinjaman</span></a
                 >
               </li>
 

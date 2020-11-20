@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use DataTables;
 use App\Models\IncomeTransaction;
 use App\Models\Tabungan;
 use App\Models\User;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -27,20 +27,13 @@ class IncomeTransactionController extends Controller
 
   public function getJsonData()
   {
-    $model = new IncomeTransaction();
-    $query = $model->with('user')->latest()->get();
+    $query = IncomeTransaction::with('user')->orderBy('created_at','desc')->get();
     return Datatables::of($query)->addIndexColumn()
-      ->editColumn('name', function ($row) {
-        return $row->user->name;
-      })
-      ->editColumn("created_at", function ($row) {
-        return date('d-m-Y', strtotime($row->created_at));
-      })
-      ->addColumn('action', function ($row) {
-
-        $btn = '<a href="javascript:void(0)" class="delete btn btn-danger btn-sm" data-id="' . $row->id . '"><i class="fas fa-trash"></i> Delete</a>';
-        return $btn;
-      })
+      ->editColumn('name', fn($row) => $row->user->name)
+      ->editColumn("created_at", fn($row) => date('d-m-Y', strtotime($row->created_at)))
+      ->addColumn('action', fn($row) =>
+        '<a href="javascript:void(0)" class="delete btn btn-danger btn-sm" data-id="' . $row->id . '"><i class="fas fa-trash"></i> Delete</a>'
+      )
       ->rawColumns(['action'])
       ->make(true);
   }
@@ -80,8 +73,4 @@ class IncomeTransactionController extends Controller
     return response()->json(['message' => 'Data berhasil dihapus']);
   }
 
-  public function getTabungan($id)
-  {
-    return Tabungan::where('user_id', $id)->first();
-  }
 }

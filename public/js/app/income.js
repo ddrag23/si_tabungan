@@ -5,9 +5,7 @@ import Helper from "../config/helper.js";
 const selectName = document.getElementById("user_id");
 const nominal = document.getElementById("nominal");
 const submit = document.getElementById("form-income");
-const tokenCsrf = {
-    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-};
+const urlTotal = `${Config.url}/transaksi/transaksi-masuk/json-total`;
 // end
 
 // jquery code
@@ -30,27 +28,13 @@ $(function() {
             { data: "nominal", name: "nominal" },
             { data: "created_at", name: "created_at" },
             { data: "action", name: "action" }
-        ]
+        ],
+        order: [[4, "desc"]]
     });
 });
 // jquer code end
 
 // vanilla js
-const handleTotal = async () => {
-    const urlTotal = `${Config.url}/transaksi/transaksi-masuk/json-total`;
-    Helper.getData(urlTotal).then(res => {
-        const total = document.querySelector(".total");
-        total.innerText = `Total Transaksi : Rp. ${Helper.formatRupiah(
-            res.total
-        )}`;
-    });
-};
-const handleReload = () => {
-    $("#table")
-        .DataTable()
-        .ajax.reload();
-};
-
 const handleValidate = () => {
     if (selectName.value == "") {
         selectName.classList.add("border-danger");
@@ -64,23 +48,21 @@ const handleValidate = () => {
 
 const handleSubmit = e => {
     e.preventDefault();
+    const urlSubmit = `${Config.url}/transaksi/transaksi-masuk/store`;
     const formData = new FormData();
     formData.append("user_id", selectName.value);
     formData.append("nominal", nominal.value);
 
     Helper.storeData(
-        `${Config.url}/transaksi/transaksi-masuk/store`,
-        Helper.setConfig("POST", "cors", tokenCsrf, formData)
+        urlSubmit,
+        Helper.setConfig("POST", "cors", Config.tokenCsrf, formData)
     )
         .then(res => {
             // console.log(res);
             if (res.success) {
-                $(".select2")
-                    .val(null)
-                    .trigger("change");
-                submit.reset();
-                handleReload();
-                handleTotal();
+                Helper.reloadDataTabel("#table");
+                Helper.reloadForm("#form-income", ".select2");
+                Helper.getTotal(urlTotal, ".total");
                 Helper.successMsg(res.message);
                 $("#exampleModal").modal("hide");
             } else {
@@ -111,11 +93,11 @@ const handleDelete = e => {
             if (willDelete) {
                 Helper.storeData(
                     urlDelete,
-                    Helper.setConfig("DELETE", "cors", tokenCsrf)
+                    Helper.setConfig("DELETE", "cors", Config.tokenCsrf)
                 )
                     .then(res => {
-                        handleReload();
-                        handleTotal();
+                        Helper.reloadDataTabel("#table");
+                        Helper.getTotal(urlTotal, ".total");
                         Helper.successMsg(res.message);
                     })
                     .catch(err => Helper.errorMsg(err));
@@ -128,5 +110,5 @@ const handleDelete = e => {
 
 submit.addEventListener("submit", handleSubmit);
 document.addEventListener("click", handleDelete);
-window.onload = handleTotal;
+window.onload = Helper.getTotal(urlTotal, ".total");
 // vanilla js end

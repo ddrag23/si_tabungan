@@ -1,10 +1,13 @@
-@extends('layouts.app',['title' => 'Tabungan'])
+@extends('layouts.app',['title' => 'Pinjaman'])
 @section('content')
 <div class="row">
     <div class="col-12">
         <div class="card card-primary">
             <div class="card-header">
                 <h4 class="text-primary total"></h4>
+                <div class="card-header-action">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-plus"></i> Tambah</button>
+                </div>
             </div>
             <div class="card-body">
                 <table class="table table-striped" id="table">
@@ -15,8 +18,9 @@
                             </th>
                             <th>Nama Murid</th>
                             <th>Total Tabungan</th>
-                            <th>Tabungan dibuat</th>
-                            <th>Tabungan Terakhir</th>
+                            <th>Tanggal Pinjaman</th>
+                            <th>Tanggal Pelunasan</th>
+                            <th>Bukti Pelunasan</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -62,9 +66,8 @@
     </div>
 </div>
 </div>
-
 @endsection
 
 @push('script')
-<script type="module" src="{{ asset('js/app/tabungan.js') }}" charset="utf-8"></script>
+<script type="module" src="{{ asset('js/app/pinjaman.js') }}" charset="utf-8"></script>
 @endpush

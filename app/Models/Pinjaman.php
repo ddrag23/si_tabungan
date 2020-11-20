@@ -5,16 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tabungan extends Model
+class Pinjaman extends Model
 {
     use HasFactory;
-    protected $table = 'tabungan';
-    protected $fillable = [
-      'user_id',
-      'saldo',
-      'created_by',
-      'modified_by'
-    ];
+    protected $table = 'pinjaman';
 
     public function user()
     {
