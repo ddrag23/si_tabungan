@@ -53,7 +53,7 @@
                     </div>
                     <div class="form-group">
                         <label>Nominal</label>
-                        <input type="number" class="form-control" id="nominal">
+                        <input type="text" class="form-control" id="nominal">
                     </div>
                 </div>
                 <div class="modal-footer bg-whitesmoke br">

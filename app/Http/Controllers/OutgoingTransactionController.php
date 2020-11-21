@@ -24,25 +24,30 @@ class OutgoingTransactionController extends Controller
       'user_id' => 'required',
       'nominal' => 'required|numeric'
     ]);
+    $nominal = (Int)$request->nominal;
 
     if ($validator->fails()) {
       return response()->json(['success' => false, 'message' => $validator->getMessageBag()->toArray()]);
     } else {
       $tabungan = Tabungan::where('user_id', $request->user_id)->first();
       if (!empty($tabungan)) {
-        $outgoing->create([
-          'user_id' => $request->user_id,
-          'nominal' => $request->nominal,
-          'created_by' => Auth::user()->id
-        ]);
+        if ($tabungan->saldo - $nominal > 0) {
+          $outgoing->create([
+            'user_id' => $request->user_id,
+            'nominal' => $nominal,
+            'created_by' => Auth::user()->id
+          ]);
 
-        $tabungan->where('user_id', $request->user_id)->update([
-          'user_id' => $request->user_id,
-          'saldo' => $tabungan->saldo - $request->nominal,
-          'modified_by' => Auth::user()->id
-        ]);
+          $tabungan->update([
+            'user_id' => $request->user_id,
+            'saldo' => $tabungan->saldo - $nominal,
+            'modified_by' => Auth::user()->id
+          ]);
+        } else {
+          return response()->json(['success' => false, 'warning' => true, 'message' => 'Tabungan anda kurang untuk melakukan penarikan']);
+        }
       } else {
-        return response()->json(['success' => true, 'message' => 'Anda belum memiliki tabungan']);
+        return response()->json(['success' => false, 'warning' => true, 'message' => 'Anda belum memiliki tabungan']);
       }
       return response()->json(['success' => true, 'message' => 'Data berhasil dimasukkan']);
     }

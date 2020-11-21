@@ -41,25 +41,26 @@ class IncomeTransactionController extends Controller
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), ['user_id' => 'required', 'nominal' => 'required|numeric']);
+    $nominal = (Int)$request->nominal;
     if ($validator->fails()) {
       return response()->json(['success' => false, 'message' => $validator->getMessageBag()->toArray()]);
     } else {
       IncomeTransaction::create([
         'user_id' => $request->user_id,
-        'nominal' => $request->nominal,
+        'nominal' => $nominal,
         'created_by' => Auth::user()->id
       ]);
       $tabungan = Tabungan::where('user_id', $request->user_id)->first();
       if (!empty($tabungan)) {
         Tabungan::where('user_id', $request->user_id)->update([
           'user_id' => $request->user_id,
-          'saldo' => $tabungan->saldo + $request->nominal,
+          'saldo' => $tabungan->saldo + $nominal,
           'modified_by' => Auth::user()->id
         ]);
       } else {
         Tabungan::create([
           'user_id' => $request->user_id,
-          'saldo' => $request->nominal,
+          'saldo' => $nominal,
           'created_by' => Auth::user()->id
         ]);
       }

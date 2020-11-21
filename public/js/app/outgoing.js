@@ -35,6 +35,11 @@ $(function() {
 // jquer code end
 
 // vanilla js
+
+nominal.addEventListener("keyup", (e) => {
+  e.target.value = Helper.inputRupiah(e.target.value);
+});
+
 const handleValidate = () => {
   if (selectName.value == "") {
     selectName.classList.add("border-danger");
@@ -51,14 +56,13 @@ const handleSubmit = (e) => {
   const urlSubmit = `${Config.url}/transaksi/transaksi-keluar/store`;
   const formData = new FormData();
   formData.append("user_id", selectName.value);
-  formData.append("nominal", nominal.value);
+  formData.append("nominal", Helper.removeDot(nominal.value));
 
   Helper.storeData(
     urlSubmit,
     Helper.setConfig("POST", "cors", Config.tokenCsrf, formData)
   )
     .then((res) => {
-      // console.log(res);
       if (res.success) {
         Helper.reloadDataTabel("#table");
         Helper.reloadForm("#form-outgoing", ".select2");
@@ -66,6 +70,9 @@ const handleSubmit = (e) => {
         Helper.successMsg(res.message);
         $("#exampleModal").modal("hide");
       } else {
+        if (res.warning) {
+          return Helper.warningMsg(res.message);
+        }
         for (let index in res.message) {
           Helper.errorMsg(res.message[index]);
           handleValidate();
